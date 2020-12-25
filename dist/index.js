@@ -9227,7 +9227,7 @@ function action(ctx, options) {
         }
         if (!(yield utils_1.isStageAreEmpty(ctx.exec))) {
             yield ctx.exec(`git commit -m "Automated release" -a`);
-            yield ctx.exec(`git push origin`);
+            yield ctx.exec(`git push --set-upstream origin ${options.branchName}`);
         }
     });
 }
