@@ -22,6 +22,7 @@ export async function makeWorkspace(
  * Skips side effects that would require real git remote or change global git settings as tests do not run usually in a sandboxed environment
  */
 export function getFilteringExec(realExec: Exec): Exec {
+  const isCI = !!process.env.CI
   return (...args: any[]) => {
     if (args[0].startsWith('git push')) {
       return
@@ -29,7 +30,8 @@ export function getFilteringExec(realExec: Exec): Exec {
     if (args[0].startsWith('git remote')) {
       return
     }
-    if (args[0].startsWith('git config')) {
+    // allow to configure git on CI - otherwise it's not possible to commit anything
+    if (!isCI && args[0].startsWith('git config')) {
       return
     }
     if (args[0].startsWith('git ls-remote --heads origin')) {
