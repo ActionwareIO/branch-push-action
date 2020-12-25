@@ -1,0 +1,12 @@
+name: 'Branch push action'
+description: 'Move files to a different branch and make a commit. Useful for GitHub Action deployment.'
+inputs:
+  branch:
+    required: true
+  files:
+    required: true
+  GITHUB_TOKEN:
+    required: true
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
