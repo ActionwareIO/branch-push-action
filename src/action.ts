@@ -3,7 +3,14 @@ import { join } from 'path'
 import { dirSync as tmp } from 'tmp'
 
 import { Exec } from './exec'
-import { checkIfRemoteBranchExists, isStageAreEmpty, newPristineBranch, setupGit, switchBranch } from './git/utils'
+import {
+  checkIfRemoteBranchExists,
+  isStageAreEmpty,
+  newPristineBranch,
+  setupGitClient,
+  setupGitRemote,
+  switchBranch,
+} from './git/utils'
 
 interface ActionCtx {
   exec: Exec
@@ -27,7 +34,8 @@ export async function action(ctx: ActionCtx, options: Options) {
     copySync(join(ctx.cwd, file), fullOutputPath)
   }
 
-  await setupGit(ctx.exec, ctx.env)
+  await setupGitClient(ctx.exec)
+  await setupGitRemote(ctx.exec, ctx.env)
   if (await checkIfRemoteBranchExists(ctx.exec, options.branchName)) {
     console.log(`Remote branch ${options.branchName} exists. Switching...`)
     await switchBranch(ctx.exec, options.branchName)
@@ -47,6 +55,6 @@ export async function action(ctx: ActionCtx, options: Options) {
 
   if (!(await isStageAreEmpty(ctx.exec))) {
     await ctx.exec(`git commit -m "Automated release" -a`)
-    await ctx.exec(`git push origin-authorized`)
+    await ctx.exec(`git push origin`)
   }
 }

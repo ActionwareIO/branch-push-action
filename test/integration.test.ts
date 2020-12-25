@@ -3,6 +3,7 @@ import { readFileSync } from 'fs-extra'
 import { join } from 'path'
 
 import { action } from '../src/action'
+import { setupGitClient } from '../src/git/utils'
 import { getFilteringExec, makeWorkspace, writeFiles } from './helpers'
 
 describe('integration', () => {
@@ -14,6 +15,7 @@ describe('integration', () => {
     }
     const { exec, git, workspacePath } = await makeWorkspace(workspaceFiles)
     const filteringExec = getFilteringExec(exec)
+    await setupGitClient(filteringExec)
 
     await exec('git add .gitignore action.yml')
     await exec('git commit -m init')
@@ -46,6 +48,7 @@ describe('integration', () => {
     }
     const { exec, git, workspacePath } = await makeWorkspace(workspaceFiles)
     const filteringExec = getFilteringExec(exec)
+    await setupGitClient(filteringExec)
 
     await exec('git add .gitignore action.yml')
     await exec('git commit -m init')
@@ -85,6 +88,7 @@ describe('integration', () => {
     }
     const { exec, git, workspacePath } = await makeWorkspace(workspaceFiles)
     const filteringExec = getFilteringExec(exec)
+    await setupGitClient(filteringExec)
 
     await exec('git add .gitignore action.yml')
     await exec('git commit -m init')

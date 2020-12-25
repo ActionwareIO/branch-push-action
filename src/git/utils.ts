@@ -1,9 +1,11 @@
 import { Exec } from '../exec'
 
-export async function setupGit(exec: Exec, env: NodeJS.ProcessEnv) {
+export async function setupGitClient(exec: Exec) {
   await exec('git config --global user.email github-actions[bot]@users.noreply.github.com')
   await exec('git config --global user.name github-actions[bot]')
+}
 
+export async function setupGitRemote(exec: Exec, env: NodeJS.ProcessEnv) {
   // replace read only origin with full access origin
   await exec(`git remote remove origin`)
   await exec(
