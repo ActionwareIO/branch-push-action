@@ -56,6 +56,6 @@ export async function action(ctx: ActionCtx, options: Options) {
 
   if (!(await isStageAreEmpty(ctx.exec))) {
     await ctx.exec(`git commit -m "Automated release" -a`)
-    await ctx.exec(`git push origin`)
+    await ctx.exec(`git push --set-upstream origin ${options.branchName}`)
   }
 }
