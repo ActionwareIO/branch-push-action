@@ -9212,6 +9212,7 @@ function action(ctx, options) {
         yield utils_1.setupGitRemote(ctx.exec, ctx.env);
         if (yield utils_1.checkIfRemoteBranchExists(ctx.exec, options.branchName)) {
             console.log(`Remote branch ${options.branchName} exists. Switching...`);
+            yield ctx.exec(`git fetch`);
             yield utils_1.switchBranch(ctx.exec, options.branchName);
         }
         else {
