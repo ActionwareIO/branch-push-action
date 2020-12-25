@@ -9180,56 +9180,45 @@ function wrappy (fn, cb) {
 /***/ }),
 
 /***/ 7672:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.action = void 0;
 const fs_extra_1 = __webpack_require__(5630);
 const path_1 = __webpack_require__(5622);
 const tmp_1 = __webpack_require__(8517);
 const utils_1 = __webpack_require__(7461);
-function action(ctx, options) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const tmpDir = tmp_1.dirSync().name;
-        console.log('Tmp dir created: ', tmpDir);
-        console.info(`Coping ${options.files.length} files away to tmp dir`);
-        for (const file of options.files) {
-            const fullOutputPath = path_1.join(tmpDir, file);
-            fs_extra_1.copySync(path_1.join(ctx.cwd, file), fullOutputPath);
-        }
-        yield utils_1.setupGitClient(ctx.exec);
-        yield utils_1.setupGitRemote(ctx.exec, ctx.env);
-        if (yield utils_1.checkIfRemoteBranchExists(ctx.exec, options.branchName)) {
-            console.log(`Remote branch ${options.branchName} exists. Switching...`);
-            yield ctx.exec(`git fetch`);
-            yield utils_1.switchBranch(ctx.exec, options.branchName);
-        }
-        else {
-            console.log(`Remote branch ${options.branchName} does not exist. Creating pristine branch ${options.branchName}.`);
-            yield utils_1.newPristineBranch(ctx.exec, options.branchName);
-        }
-        console.info(`Coping ${options.files.length} files back to the workspace and git adding them`);
-        for (const file of options.files) {
-            const fullOutputPath = path_1.join(tmpDir, file);
-            fs_extra_1.copySync(fullOutputPath, path_1.join(ctx.cwd, file), { overwrite: true });
-            yield ctx.exec(`git add --force ${file}`);
-        }
-        if (!(yield utils_1.isStageAreEmpty(ctx.exec))) {
-            yield ctx.exec(`git commit -m "Automated release" -a`);
-            yield ctx.exec(`git push --set-upstream origin ${options.branchName}`);
-        }
-    });
+async function action(ctx, options) {
+    const tmpDir = tmp_1.dirSync().name;
+    console.log('Tmp dir created: ', tmpDir);
+    console.info(`Coping ${options.files.length} files away to tmp dir`);
+    for (const file of options.files) {
+        const fullOutputPath = path_1.join(tmpDir, file);
+        fs_extra_1.copySync(path_1.join(ctx.cwd, file), fullOutputPath);
+    }
+    await utils_1.setupGitClient(ctx.exec);
+    await utils_1.setupGitRemote(ctx.exec, ctx.env);
+    if (await utils_1.checkIfRemoteBranchExists(ctx.exec, options.branchName)) {
+        console.log(`Remote branch ${options.branchName} exists. Switching...`);
+        await ctx.exec(`git fetch`);
+        await utils_1.switchBranch(ctx.exec, options.branchName);
+    }
+    else {
+        console.log(`Remote branch ${options.branchName} does not exist. Creating pristine branch ${options.branchName}.`);
+        await utils_1.newPristineBranch(ctx.exec, options.branchName);
+    }
+    console.info(`Coping ${options.files.length} files back to the workspace and git adding them`);
+    for (const file of options.files) {
+        const fullOutputPath = path_1.join(tmpDir, file);
+        fs_extra_1.copySync(fullOutputPath, path_1.join(ctx.cwd, file), { overwrite: true });
+        await ctx.exec(`git add --force ${file}`);
+    }
+    if (!(await utils_1.isStageAreEmpty(ctx.exec))) {
+        await ctx.exec(`git commit -m "Automated release" -a`);
+        await ctx.exec(`git push --set-upstream origin ${options.branchName}`);
+    }
 }
 exports.action = action;
 
@@ -9260,29 +9249,18 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.entrypoint = void 0;
 const core = __importStar(__webpack_require__(2186));
 const action_1 = __webpack_require__(7672);
 const exec_1 = __webpack_require__(5047);
-function entrypoint() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const cwd = process.cwd();
-        const env = process.env;
-        const branchName = core.getInput('branch', { required: true });
-        const filesRaw = core.getInput('files', { required: true });
-        const files = filesRaw.split('\n').map((s) => s.trim());
-        yield action_1.action({ cwd, exec: exec_1.getExec(process.cwd()), env }, { branchName, files });
-    });
+async function entrypoint() {
+    const cwd = process.cwd();
+    const env = process.env;
+    const branchName = core.getInput('branch', { required: true });
+    const filesRaw = core.getInput('files', { required: true });
+    const files = filesRaw.split('\n').map((s) => s.trim());
+    await action_1.action({ cwd, exec: exec_1.getExec(process.cwd()), env }, { branchName, files });
 }
 exports.entrypoint = entrypoint;
 entrypoint().catch((e) => {
@@ -9295,26 +9273,17 @@ entrypoint().catch((e) => {
 /***/ }),
 
 /***/ 5047:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getExec = void 0;
 const exec_1 = __webpack_require__(1514);
 function getExec(cwd) {
-    return (cmd) => __awaiter(this, void 0, void 0, function* () {
+    return async (cmd) => {
         let output = '';
-        yield exec_1.exec(cmd, [], {
+        await exec_1.exec(cmd, [], {
             cwd,
             listeners: {
                 stdout: (data) => {
@@ -9323,7 +9292,7 @@ function getExec(cwd) {
             },
         });
         return output;
-    });
+    };
 }
 exports.getExec = getExec;
 
@@ -9331,63 +9300,42 @@ exports.getExec = getExec;
 /***/ }),
 
 /***/ 7461:
-/***/ (function(__unused_webpack_module, exports) {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.isStageAreEmpty = exports.checkIfRemoteBranchExists = exports.switchBranch = exports.newPristineBranch = exports.setupGitRemote = exports.setupGitClient = void 0;
-function setupGitClient(exec) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield exec('git config --global user.email github-actions[bot]@users.noreply.github.com');
-        yield exec('git config --global user.name github-actions[bot]');
-    });
+async function setupGitClient(exec) {
+    await exec('git config --global user.email github-actions[bot]@users.noreply.github.com');
+    await exec('git config --global user.name github-actions[bot]');
 }
 exports.setupGitClient = setupGitClient;
-function setupGitRemote(exec, env) {
-    return __awaiter(this, void 0, void 0, function* () {
-        // replace read only origin with full access origin
-        yield exec(`git remote remove origin`);
-        yield exec(`git remote add origin https://${env.GITHUB_ACTOR}:${env.INPUT_GITHUB_TOKEN}@github.com/${env.GITHUB_REPOSITORY}.git`);
-    });
+async function setupGitRemote(exec, env) {
+    // replace read only origin with full access origin
+    await exec(`git remote remove origin`);
+    await exec(`git remote add origin https://${env.GITHUB_ACTOR}:${env.INPUT_GITHUB_TOKEN}@github.com/${env.GITHUB_REPOSITORY}.git`);
 }
 exports.setupGitRemote = setupGitRemote;
-function newPristineBranch(exec, branchName) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield exec(`git checkout --orphan ${branchName}`);
-        yield exec('git reset'); // remove all files from staging area
-        yield exec('git commit --allow-empty -m "Root commit"');
-        yield exec(`git push origin ${branchName}`);
-    });
+async function newPristineBranch(exec, branchName) {
+    await exec(`git checkout --orphan ${branchName}`);
+    await exec('git reset'); // remove all files from staging area
+    await exec('git commit --allow-empty -m "Root commit"');
+    await exec(`git push origin ${branchName}`);
 }
 exports.newPristineBranch = newPristineBranch;
-function switchBranch(exec, branchName) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield exec(`git checkout "${branchName}"`);
-    });
+async function switchBranch(exec, branchName) {
+    await exec(`git checkout "${branchName}"`);
 }
 exports.switchBranch = switchBranch;
-function checkIfRemoteBranchExists(exec, branchName) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const branchInfo = yield exec(`git ls-remote --heads origin "${branchName}"`);
-        return branchInfo.indexOf(branchName) !== -1;
-    });
+async function checkIfRemoteBranchExists(exec, branchName) {
+    const branchInfo = await exec(`git ls-remote --heads origin "${branchName}"`);
+    return branchInfo.indexOf(branchName) !== -1;
 }
 exports.checkIfRemoteBranchExists = checkIfRemoteBranchExists;
-function isStageAreEmpty(exec) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const output = yield exec('git diff --cached');
-        return output === '';
-    });
+async function isStageAreEmpty(exec) {
+    const output = await exec('git diff --cached');
+    return output === '';
 }
 exports.isStageAreEmpty = isStageAreEmpty;
 
