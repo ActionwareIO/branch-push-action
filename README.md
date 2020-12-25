@@ -6,3 +6,33 @@
     <a href="/package.json"><img alt="Software License" src="https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square"></a>
   </p>
 </p>
+
+## Usage
+
+**.github/workflows/deploy.yml**:
+
+```yml
+name: deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      -  # build
+
+      - uses: ActionwareIO/branch-push-action@action
+        with:
+          branch: action
+          files: |
+            README.md
+            action.yml
+            ./dist/index.js
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
