@@ -38,6 +38,7 @@ export async function action(ctx: ActionCtx, options: Options) {
   await setupGitRemote(ctx.exec, ctx.env)
   if (await checkIfRemoteBranchExists(ctx.exec, options.branchName)) {
     console.log(`Remote branch ${options.branchName} exists. Switching...`)
+    await ctx.exec(`git fetch`)
     await switchBranch(ctx.exec, options.branchName)
   } else {
     console.log(`Remote branch ${options.branchName} does not exist. Creating pristine branch ${options.branchName}.`)
