@@ -23,6 +23,7 @@ export async function makeWorkspace(
  */
 export function getFilteringExec(realExec: Exec): Exec {
   const isCI = !!process.env.CI
+
   return (...args: any[]) => {
     if (args[0].startsWith('git push')) {
       return
