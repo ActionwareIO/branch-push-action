@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`integration creates new deploy branch 1`] = `
+"A	action.yml
+A	dist/index.js
+"
+`;
+
+exports[`integration pushes to already existing branch 1`] = `
+"M	dist/index.js
+"
+`;
+
+exports[`integration works when nothing to commit 1`] = `
+"A	dist/index.js
+"
+`;
