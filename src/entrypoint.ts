@@ -7,7 +7,11 @@ export async function entrypoint() {
   const cwd = process.cwd()
   const env = process.env
 
-  await action({ cwd, exec: getExec(process.cwd()), env }, { branchName: 'action', files: [] })
+  const branchName = core.getInput('branch', { required: true })
+  const filesRaw = core.getInput('files', { required: true })
+  const files = filesRaw.split('\n').map((s) => s.trim())
+
+  await action({ cwd, exec: getExec(process.cwd()), env }, { branchName, files })
 }
 
 entrypoint().catch((e) => {
