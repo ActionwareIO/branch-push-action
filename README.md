@@ -9,6 +9,8 @@
 
 ## Usage
 
+[Full article about this action](https://dev.to/krzkaczor/fixing-github-actions-development-using-github-actions-33mk)
+
 **.github/workflows/deploy.yml**:
 
 ```yml
